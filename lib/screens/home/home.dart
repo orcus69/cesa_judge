@@ -1,3 +1,4 @@
+import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget{
@@ -47,26 +48,12 @@ class HomeScreen extends StatelessWidget{
                         padding: const EdgeInsets.only(left: 60.0, right: 60),
                         child: SizedBox(
                           width: double.infinity,
-                          child: RaisedButton(
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            padding: EdgeInsets.only(top:20, bottom: 20,),
-                            child: Text(
-                              "Cadastrar Evento".toUpperCase(), 
-                              style: TextStyle(
-                                height: 1.171875,
-                                fontSize: 18.0,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w700,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                                /* letterSpacing: 0.0, */
-                              )
-                            ),
+                          child: ButtonWidget(
                             color: Colors.white,
                             textColor: Colors.black,
-                            onPressed: ()=>Navigator.of(context).pushNamed("/createEvent"),
+                            text: 'Cadastrar Evento',
+                            onClicked: () => Navigator.of(context).pushNamed("/createEvent"),
+                            
                           ),
                         ),
                       ),
@@ -78,24 +65,12 @@ class HomeScreen extends StatelessWidget{
                         padding: const EdgeInsets.only(left: 60.0, right: 60),
                         child: SizedBox(
                           width: double.infinity,
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            padding: EdgeInsets.only(top:20, bottom: 20,),
-                            child: Text(
-                              "Entrar".toUpperCase(), 
-                              style: TextStyle(
-                                height: 1.171875,
-                                fontSize: 18.0,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w700,
-                                color: Color.fromARGB(255, 255, 255, 255),
-                              ),
-                            ),
+                          child: ButtonWidget(
                             color: Color.fromARGB(255, 38, 164, 255),
                             textColor: Colors.white,
-                            onPressed: ()=>Navigator.of(context).pushNamed("/enterEvent"),
+                            text: 'Entrar',
+                            onClicked: () => Navigator.of(context).pushNamed("/enterEvent"),
+                            
                           ),
                         ),
                       ),

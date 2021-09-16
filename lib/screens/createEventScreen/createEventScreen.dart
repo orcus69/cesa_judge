@@ -1,3 +1,4 @@
+import 'package:cesa_events_judge/api/sheet/participantsSheetApi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -8,6 +9,7 @@ class CreateEventScreen extends StatelessWidget{
   final TextEditingController descriptionControler = TextEditingController();
   final TextEditingController dateTimeControler = TextEditingController();
   final TextEditingController jugdControler = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -15,7 +17,9 @@ class CreateEventScreen extends StatelessWidget{
   @override 
   Widget build(BuildContext context){
     final key = new GlobalKey<ScaffoldState>();
+
     final String _textCode = "CSA00001";
+
     return Scaffold(
       key: key,
       body: Form(
@@ -181,6 +185,36 @@ class CreateEventScreen extends StatelessWidget{
                                   onSaved: (name){},
                                 ),
                               ),
+                              Text(
+                                "Link da planilha de participantes", 
+                                style: TextStyle(
+                                  color: Colors.white, 
+                                  fontFamily: "Roboto", 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Card(
+                                child: TextFormField(
+                                  controller: linkController,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 4),
+                                    hintText: 'https://https://docs.google.com/spreadsheets/d/IDPLANILHAGOOGLESHEETS',
+                                    border: InputBorder.none,
+                                    icon: Icon(Icons.link_outlined),
+                                  ),
+                                  validator: (link) {
+                                    if (link!.isEmpty) {
+                                      return 'O link precisa ser preenchido';
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (link){},
+                                ),
+                              ),
                               SizedBox(height: 8,),
 
                               SizedBox(
@@ -191,148 +225,117 @@ class CreateEventScreen extends StatelessWidget{
                                   ),
                                   padding: EdgeInsets.only(top:20, bottom: 20),
                                   
-                                  onPressed:(){},
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '''Carregar participantes''',
-                                        overflow: TextOverflow.visible,
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          height: 1.171875,
-                                          fontSize: 18.0,
-                                          fontFamily: 'Roboto',
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white
-                                        ),
-                                        
-                                      ),
-                                      SizedBox(width: 20,),
-                                      Icon(Icons.upload, color: Colors.white),
-                                    ],
-                                  ),
-                                  color: Color.fromARGB(255, 0, 180, 94),
-                                ),
-                              ),
-                               SizedBox(height: 8,),
-
-                              SizedBox(
-                                width: double.infinity,
-                                child: RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: EdgeInsets.only(top:20, bottom: 20),
-                                  
                                   //TODO: CRIAR EVENTO NO FIREBASE E GERA QRCODE
-                                  onPressed:()=>showDialog(
-                                    context: context, 
-                                    builder: (_){
-                                      return AlertDialog(
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              '''Código do evento''',
-                                              overflow: TextOverflow.visible,
-                                              style: TextStyle(
-                                                height: 1.171875,
-                                                fontSize: 18.0,
-                                                fontFamily: 'Roboto',
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.black,
-
-                                                /* letterSpacing: 0.0, */
-                                              ),
-                                            ),
-                                            SizedBox(height: 8,),
-                                            //QR CODE
-                                            Container(
-                                              width: 266.0,
-                                              height: 247.0,
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(5),
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children:[ 
-                                                    
-                                                    Container(
-                                                      color: Color.fromARGB(255, 248, 248, 248),
-                                                    ),
-                                                    QrImage(
-                                                      data: 'CSA0001',
-                                                      version: QrVersions.auto,
-                                                      size: 220,
-                                                      gapless: false,
-                                                      embeddedImage: AssetImage('assets/logoWHITE.png'),
-                                                      embeddedImageStyle: QrEmbeddedImageStyle(
-                                                        size: Size(80, 80),
-                                                      ),
-                                                    )
-                                                  ]
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 8,),
-
-                                            //CODIGO GERADO
-                                            Container(
-                                              width: double.infinity,
-                                              height: 33.0,
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(5),
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    Container(
-                                                      color: Color.fromARGB(255, 228, 221, 221),
-                                                    ),
-                                                    Text(
-
-                                                    _textCode.toUpperCase(), 
-                                                    style: TextStyle(
-                                                      fontSize: 18.0,
-                                                      fontFamily: 'Roboto',
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Colors.black,
-                                                      /* letterSpacing: 0.0, */
-                                                    ),
-                                                  ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 8,),
-                                            //COPIAR CODIGO
-                                            GestureDetector(
-                                              onTap: (){ 
-                                                Clipboard.setData(ClipboardData(text: _textCode));
-                                                // ignore: deprecated_member_use
-                                                key.currentState!.showSnackBar(
-                                                  SnackBar(content: Text("Código copiado"), duration: Duration(seconds: 2),)
-                                                );
-                                              },
-                                              child: Text(
-                                                '''Copiar código''',
+                                  onPressed:(){
+                                    ParticipantsSheetApi.init();
+                                    showDialog(
+                                      context: context, 
+                                      builder: (_){
+                                        return AlertDialog(
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                '''Código do evento''',
                                                 overflow: TextOverflow.visible,
                                                 style: TextStyle(
                                                   height: 1.171875,
                                                   fontSize: 18.0,
                                                   fontFamily: 'Roboto',
                                                   fontWeight: FontWeight.w700,
-                                                  color: Color.fromARGB(255, 0, 163, 255),
-                                            
+                                                  color: Colors.black,
+
                                                   /* letterSpacing: 0.0, */
                                                 ),
                                               ),
-                                            )
-                                          ],
-                                        ),
+                                              SizedBox(height: 8,),
+                                              //QR CODE
+                                              Container(
+                                                width: 266.0,
+                                                height: 247.0,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children:[ 
+                                                      
+                                                      Container(
+                                                        color: Color.fromARGB(255, 248, 248, 248),
+                                                      ),
+                                                      QrImage(
+                                                        data: 'CSA0001',
+                                                        version: QrVersions.auto,
+                                                        size: 220,
+                                                        gapless: false,
+                                                        embeddedImage: AssetImage('assets/logoWHITE.png'),
+                                                        embeddedImageStyle: QrEmbeddedImageStyle(
+                                                          size: Size(80, 80),
+                                                        ),
+                                                      )
+                                                    ]
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 8,),
 
-                                      );
-                                    }
-                                    ),
+                                              //CODIGO GERADO
+                                              Container(
+                                                width: double.infinity,
+                                                height: 33.0,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      Container(
+                                                        color: Color.fromARGB(255, 228, 221, 221),
+                                                      ),
+                                                      Text(
+
+                                                      _textCode.toUpperCase(), 
+                                                      style: TextStyle(
+                                                        fontSize: 18.0,
+                                                        fontFamily: 'Roboto',
+                                                        fontWeight: FontWeight.w700,
+                                                        color: Colors.black,
+                                                        /* letterSpacing: 0.0, */
+                                                      ),
+                                                    ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 8,),
+                                              //COPIAR CODIGO
+                                              GestureDetector(
+                                                onTap: (){ 
+                                                  Clipboard.setData(ClipboardData(text: _textCode));
+                                                  // ignore: deprecated_member_use
+                                                  key.currentState!.showSnackBar(
+                                                    SnackBar(content: Text("Código copiado"), duration: Duration(seconds: 2),)
+                                                  );
+                                                },
+                                                child: Text(
+                                                  '''Copiar código''',
+                                                  overflow: TextOverflow.visible,
+                                                  style: TextStyle(
+                                                    height: 1.171875,
+                                                    fontSize: 18.0,
+                                                    fontFamily: 'Roboto',
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Color.fromARGB(255, 0, 163, 255),
+                                              
+                                                    /* letterSpacing: 0.0, */
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+
+                                        );
+                                      }
+                                    );
+                                  },
                                   child: const Text(
                                     '''Criar Evento''',
                                     overflow: TextOverflow.visible,
@@ -346,6 +349,7 @@ class CreateEventScreen extends StatelessWidget{
                                     ),
                                   ),
                                   color: Color.fromARGB(255, 38, 164, 255),
+                                  
                                 ),
                               ),
                             ],
