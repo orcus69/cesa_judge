@@ -2,6 +2,9 @@ import 'package:cesa_events_judge/models/participants/participants.dart';
 import 'package:gsheets/gsheets.dart';
 
 class ParticipantsSheetApi{
+
+  List<String> header = [];
+
   static const _credentials = r'''
     {
       "type": "service_account",
@@ -28,7 +31,11 @@ class ParticipantsSheetApi{
     this.isLoading = load;
   } 
 
-  static Future init() async{
+  Future setHeader(List<String> header)async{
+    this.header = header;
+  }
+
+  Future init() async{
     try{
       //Acessando a planilha do google
       final spreadsheet = await _gsheet.spreadsheet(_spreadsheetId);
@@ -37,7 +44,7 @@ class ParticipantsSheetApi{
       _participantSheet = await _getWorkSheet(spreadsheet, title: 'Participantes');
 
       //Salvando primeira linha na planilha
-      final firstRow = ParticipantsField.getFields();
+      final firstRow = header;
       _participantSheet!.values.insertRow(1, firstRow);
     }catch(e){
       print('Init error: $e');
@@ -71,4 +78,42 @@ class ParticipantsSheetApi{
 
     return lasRow == null ? 0 :  int.tryParse(lasRow.first) ?? 0;
   }
+
+  //Retorna participante da planilha pelo ID
+  static Future getById(int id)async{
+    if(_participantSheet == null) return 0;
+
+    //Retorna map da linha selecionada pelo ID
+    final json = await _participantSheet!.values.map.rowByKey(id, fromColumn: 1);
+
+    //converte resultado em um obejto Participante
+    return json == null ? null : Participants.fromJson(json);
+  }
+
+  //Retorna todos os participantes da planilha
+  static Future<List<Participants>> getAll()async{
+    if(_participantSheet == null) return <Participants>[];
+
+    final participants = await _participantSheet!.values.map.allRows();
+
+    return participants == null ? <Participants>[] : participants.map(Participants.fromJson).toList();
+
+  }
+
+  //Salvando nota na planilha
+  static Future<bool> update(int id, Map<String, dynamic> participant)async{
+    if(_participantSheet == null) return false;
+
+    return _participantSheet!.values.map.insertRowByKey(id, participant);
+  }
+
+  //Salvando celular independente
+  static Future<bool> updateCell({required int id, required String key, required String value})async{
+    if(_participantSheet == null) return false;
+
+    return _participantSheet!.values.insertValueByKeys(value, columnKey: key, rowKey: id);
+
+  }
+
+
 }

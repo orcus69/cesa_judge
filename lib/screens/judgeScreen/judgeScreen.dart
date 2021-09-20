@@ -1,15 +1,29 @@
+import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
 import 'package:flutter/material.dart';
 
-class JudgeScreen extends StatelessWidget{
+class JudgeScreen extends StatefulWidget{
 
   JudgeScreen(this.eventCode);
 
   final String eventCode;
 
+  @override
+  _JudgeScreenState createState() => _JudgeScreenState();
+}
+
+class _JudgeScreenState extends State<JudgeScreen> {
   final TextEditingController nameControler = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isLoading = false;
+
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override 
   Widget build(BuildContext context){
@@ -44,7 +58,7 @@ class JudgeScreen extends StatelessWidget{
                     elevation: 0,
                     backgroundColor: Colors.transparent,
                     flexibleSpace: FlexibleSpaceBar(
-                      title: Text("#${eventCode.toString()}", style: TextStyle(color: Colors.white),),
+                      title: Text("#${widget.eventCode.toString()}", style: TextStyle(color: Colors.white),),
                       centerTitle: true,
                     ),
                   ),
@@ -107,28 +121,17 @@ class JudgeScreen extends StatelessWidget{
                               //BOTÃO DE ENTRAR
                               SizedBox(
                                 width: double.infinity,
-                                child: RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: EdgeInsets.only(top:20, bottom: 20),
-                                  
-                                  onPressed:(){
-                                    Navigator.of(context).pushNamed('/participant', arguments: eventCode);
-                                  },
-                                  child: Text(
-                                    "Avaliar Participantes".toUpperCase(),
-                                    overflow: TextOverflow.visible,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      height: 1.171875,
-                                      fontSize: 18.0,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white
-                                    ),
-                                  ),
+                                child: isLoading ? Container(alignment: Alignment.center ,child: CircularProgressIndicator(color: Colors.white,)) : ButtonWidget(
                                   color: Color.fromARGB(255, 38, 164, 255),
+                                  textColor: Colors.white,
+                                  text: 'Avaliar Participantes',
+                                  onClicked: ()async{
+                                    setState(() => isLoading = true);
+                                    await Future.delayed(Duration(seconds: 2));
+                                    
+                                    await Navigator.of(context).pushNamed('/participant', arguments: widget.eventCode);
+                                    setState(() => isLoading = false);
+                                  },
                                 ),
                               ),
                             ],

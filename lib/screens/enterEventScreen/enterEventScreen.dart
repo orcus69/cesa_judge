@@ -1,11 +1,25 @@
+import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
 import 'package:flutter/material.dart';
 
-class EnterEventScreen extends StatelessWidget{
+class EnterEventScreen extends StatefulWidget{
 
+  @override
+  _EnterEventScreenState createState() => _EnterEventScreenState();
+}
+
+class _EnterEventScreenState extends State<EnterEventScreen> {
   final TextEditingController codeControler = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isLoading = false;
+
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override 
   Widget build(BuildContext context){
@@ -118,31 +132,21 @@ class EnterEventScreen extends StatelessWidget{
                               //BOTÃO DE ENTRAR
                               SizedBox(
                                 width: double.infinity,
-                                child: RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: EdgeInsets.only(top:20, bottom: 20),
-                                  
-                                  //TODO: ENTRAR NO EVENTO QRCODE
-                                  onPressed:(){
-                                    if(formKey.currentState!.validate()){
-                                      Navigator.of(context).pushNamed('/judge', arguments: codeControler.text);
-                                    }
-                                  },
-                                  child: Text(
-                                    "Entrar".toUpperCase(),
-                                    overflow: TextOverflow.visible,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      height: 1.171875,
-                                      fontSize: 18.0,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white
-                                    ),
-                                  ),
+                                child: isLoading ? Container(alignment: Alignment.center ,child: CircularProgressIndicator(color: Colors.white,)) : ButtonWidget(
                                   color: Color.fromARGB(255, 38, 164, 255),
+                                  textColor: Colors.white,
+                                  text: 'Entrar',
+                                  onClicked: ()async{
+                                    
+                                    
+                                    if(formKey.currentState!.validate()){
+                                      setState(() => isLoading = true);
+                                      await Future.delayed(Duration(seconds: 2));
+                                      
+                                      await Navigator.of(context).pushNamed('/judge', arguments: codeControler.text);
+                                    }
+                                    setState(() => isLoading = false);
+                                  },
                                 ),
                               ),
                             ],

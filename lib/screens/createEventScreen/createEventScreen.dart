@@ -1,4 +1,5 @@
 import 'package:cesa_events_judge/api/sheet/participantsSheetApi.dart';
+import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -16,6 +17,8 @@ class CreateEventScreen extends StatelessWidget{
 
   @override 
   Widget build(BuildContext context){
+    final participantsSheetApi = ParticipantsSheetApi();
+
     final key = new GlobalKey<ScaffoldState>();
 
     final String _textCode = "CSA00001";
@@ -78,7 +81,7 @@ class CreateEventScreen extends StatelessWidget{
                                 child: TextFormField(
                                   decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 20),
-                                    hintText: 'Titulo',
+                                    labelText: 'Titulo',
                                     border: InputBorder.none,
                                   ),
                                   style: TextStyle(
@@ -110,7 +113,7 @@ class CreateEventScreen extends StatelessWidget{
                                   ),
                                   decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 20),
-                                    hintText: 'Descrição',
+                                    labelText: 'Descrição',
                                     border: InputBorder.none,
                                   ),
                                   maxLines: null,
@@ -140,7 +143,7 @@ class CreateEventScreen extends StatelessWidget{
                                   ),
                                   decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 4),
-                                    hintText: 'DD/MM/AAAA',
+                                    labelText: 'DD/MM/AAAA',
                                     border: InputBorder.none,
                                     icon: Icon(Icons.calendar_today),
                                   ),
@@ -169,7 +172,7 @@ class CreateEventScreen extends StatelessWidget{
                                 child: TextFormField(
                                   decoration: const InputDecoration(
                                     contentPadding: EdgeInsets.only(left: 20),
-                                    hintText: '0',
+                                    labelText: 'Quantidade de juizes',
                                     border: InputBorder.none,
                                   ),
                                   keyboardType: TextInputType.number,
@@ -179,6 +182,35 @@ class CreateEventScreen extends StatelessWidget{
                                   validator: (name) {
                                     if (name!.isEmpty) {
                                       return 'Defina a quantidade de juizes do evento';
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (name){},
+                                ),
+                              ),
+                              Text(
+                                "Quantidade de notas", 
+                                style: TextStyle(
+                                  color: Colors.white, 
+                                  fontFamily: "Roboto", 
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Card(
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.only(left: 20),
+                                    labelText: 'Quantidade de notas a serem somadas',
+                                    border: InputBorder.none,
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  validator: (name) {
+                                    if (name!.isEmpty) {
+                                      return 'Defina a quantidade de notas a serem somadas';
                                     }
                                     return null;
                                   },
@@ -219,15 +251,15 @@ class CreateEventScreen extends StatelessWidget{
 
                               SizedBox(
                                 width: double.infinity,
-                                child: RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: EdgeInsets.only(top:20, bottom: 20),
-                                  
-                                  //TODO: CRIAR EVENTO NO FIREBASE E GERA QRCODE
-                                  onPressed:(){
-                                    ParticipantsSheetApi.init();
+                                child: ButtonWidget(
+                                  color: Color.fromARGB(255, 38, 164, 255),
+                                  textColor: Colors.white,
+                                  text: 'Criar Evento',
+                                  onClicked: (){
+                                    participantsSheetApi.init();
+
+                                    participantsSheetApi.setHeader(['id', 'name', 'n1', 'n2', 'n3']);
+                                    
                                     showDialog(
                                       context: context, 
                                       builder: (_){
@@ -336,19 +368,6 @@ class CreateEventScreen extends StatelessWidget{
                                       }
                                     );
                                   },
-                                  child: const Text(
-                                    '''Criar Evento''',
-                                    overflow: TextOverflow.visible,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      height: 1.171875,
-                                      fontSize: 18.0,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white
-                                    ),
-                                  ),
-                                  color: Color.fromARGB(255, 38, 164, 255),
                                   
                                 ),
                               ),

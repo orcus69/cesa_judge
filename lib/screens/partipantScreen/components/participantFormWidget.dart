@@ -3,10 +3,12 @@ import 'package:cesa_events_judge/models/participants/participants.dart';
 import 'package:flutter/material.dart';
 
 class ParticipantFormWidget extends StatefulWidget {
-  final ValueChanged<Partipants> onSavedParticipant;
+  final Participants? participant;
+  final ValueChanged<Participants> onSavedParticipant;
 
   const ParticipantFormWidget({
     Key? key,
+    this.participant,
     required this.onSavedParticipant,
   }) : super(key: key);
 
@@ -20,6 +22,11 @@ class _ParticipantFormWidgetState extends State<ParticipantFormWidget> {
   late TextEditingController controllerName;
   late TextEditingController controllerNote;
 
+  
+
+  bool isLoading = false;
+
+
   @override
   void initState(){
     super.initState();
@@ -27,39 +34,52 @@ class _ParticipantFormWidgetState extends State<ParticipantFormWidget> {
     initParticipant();
   }
 
-  void initParticipant(){
-    controllerName = TextEditingController();
-    controllerNote = TextEditingController();
+  @override
+  void didUpdateWidget(covariant ParticipantFormWidget oldWidget){
+    super.didUpdateWidget(oldWidget);
+    initParticipant();
   }
 
+  void initParticipant(){
+
+    final name = widget.participant == null ? '' : widget.participant!.name;
+    final note = widget.participant == null ? 0  : widget.participant!.note;
+
+
+    controllerName = TextEditingController(text: name);
+    controllerNote = TextEditingController(text: note.toString());
+  }
 
   @override
-  Widget build(BuildContext context) => Form(
-    key: formKey,
-    child: Column(
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            buildName(),
-            const SizedBox(height: 16),
+  Widget build(BuildContext context){
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildName(),
+              const SizedBox(height: 16),
 
-            buildNote(),
-            const SizedBox(height: 16),
+              buildNote(),
+              const SizedBox(height: 16),
 
-            buildSubmit(),
-          ],
-        ),
-      ],
-    ),
-  );
+              isLoading ? CircularProgressIndicator(color: Colors.white,) : buildSubmit() ,
+              
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget buildName() => Card(
     child: TextFormField(
       controller: controllerName,
       decoration: InputDecoration(
         labelText: 'Nome',
-        border: OutlineInputBorder(),
+        border: InputBorder.none,
       )
     ),
   );
@@ -69,7 +89,7 @@ class _ParticipantFormWidgetState extends State<ParticipantFormWidget> {
       controller: controllerNote,
       decoration: InputDecoration(
         labelText: 'Nota',
-        border: OutlineInputBorder(),
+        border: InputBorder.none,
       ),
       validator: (note) => note != null && note.isEmpty ? 'Insira uma nota' : null,
     ),
@@ -79,18 +99,26 @@ class _ParticipantFormWidgetState extends State<ParticipantFormWidget> {
     color: Color.fromARGB(255, 38, 164, 255),
     textColor: Colors.white,
     text: 'Avaliar',
-    onClicked: (){
+    onClicked: ()async{
       final form = formKey.currentState!;
       final isValid = form.validate();
-
       if(isValid){
-        final participants = Partipants(
+        if(isLoading) return;
+
+        setState(() => isLoading = true);
+
+        final id = widget.participant == null ? null : widget.participant!.id;
+
+        final participants = Participants(
+          id: id,
           name: controllerName.text.toString(),
-          note: controllerNote.text.toString(),
+          note: num.tryParse(controllerNote.text.toString()),
         );
 
         widget.onSavedParticipant(participants);
       }
-    }
+      await Future.delayed(Duration(seconds: 2));
+      setState(() => isLoading = false);
+    },
   );
 }
