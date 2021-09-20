@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # cesa_events_judge
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# cesa_judge
+General Event Review Application
+>>>>>>> 981d27910b604ff7e96686306454ef1a96ef14bc
