@@ -31,7 +31,7 @@ class _ParticipantScreenState extends State<ParticipantScreen> {
     
   }
   Future getParticipants()async{
-    await participantsSheetApi.init();
+    await ParticipantsSheetApi.init();
     final participants = await ParticipantsSheetApi.getAll();
 
     setState((){

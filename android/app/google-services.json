@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "160344324116",
+    "project_id": "cesaevents",
+    "storage_bucket": "cesaevents.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160344324116:android:f1b456dec967eedd9a4f01",
+        "android_client_info": {
+          "package_name": "br.com.cesaeventjudge.cesa_events_judge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160344324116-hjpdghfv74c64dvdf776v85ksmoqdomc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvJJezzZaI1icHAbQhNUx5aBHdqdMRp0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160344324116-hjpdghfv74c64dvdf776v85ksmoqdomc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

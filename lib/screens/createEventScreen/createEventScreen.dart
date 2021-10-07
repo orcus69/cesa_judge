@@ -1,28 +1,43 @@
-import 'package:cesa_events_judge/api/sheet/participantsSheetApi.dart';
+import 'dart:html';
+
 import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
+import 'package:cesa_events_judge/models/event/event.dart';
+import 'package:cesa_events_judge/models/event/eventManager.dart';
+import 'package:cesa_events_judge/screens/createEventScreen/components/qrCodeWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:provider/provider.dart';
 
-class CreateEventScreen extends StatelessWidget{
+class CreateEventScreen extends StatefulWidget{
 
+  @override
+  _CreateEventScreenState createState() => _CreateEventScreenState();
+}
+
+class _CreateEventScreenState extends State<CreateEventScreen> {
   final TextEditingController titleControler = TextEditingController();
+
   final TextEditingController descriptionControler = TextEditingController();
+
   final TextEditingController dateTimeControler = TextEditingController();
+
   final TextEditingController jugdControler = TextEditingController();
+
   final TextEditingController linkController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final Event event = Event();
+
+  bool isLoading = false;
 
   @override 
   Widget build(BuildContext context){
-    final participantsSheetApi = ParticipantsSheetApi();
 
     final key = new GlobalKey<ScaffoldState>();
-
-    final String _textCode = "CSA00001";
-
+ 
     return Scaffold(
       key: key,
       body: Form(
@@ -65,314 +80,257 @@ class CreateEventScreen extends StatelessWidget{
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left:30, right: 20, bottom: 20, top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Título do evento", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 20),
-                                    labelText: 'Titulo',
-                                    border: InputBorder.none,
+                          child: Consumer<EventManager>(
+                            builder: (_, eventManager, __){
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Título do evento", 
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  Card(
+                                    child: TextFormField(
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 20),
+                                        labelText: 'Titulo',
+                                        border: InputBorder.none,
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      validator: (title) {
+                                        if (title!.length < 6) {
+                                          return 'Titulo muito curto';
+                                        }
+                                        return null;
+                                      },
+                                      onSaved: (title) => event.title = title!,
+                                    ),
                                   ),
-                                  validator: (name) {
-                                    if (name!.length < 6) {
-                                      return 'Titulo muito curto';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (name){},
-                                ),
-                              ),
-                              SizedBox(height: 8,),
-                              Text(
-                                "Descrição", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  SizedBox(height: 8,),
+                                  Text(
+                                    "Descrição", 
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 20),
-                                    labelText: 'Descrição',
-                                    border: InputBorder.none,
+                                  Card(
+                                    child: TextFormField(
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 20),
+                                        labelText: 'Descrição',
+                                        border: InputBorder.none,
+                                      ),
+                                      maxLines: null,
+                                      validator: (desc) {
+                                        if (desc!.length < 10) {
+                                          return 'Descrição muito curta';
+                                        }
+                                        return null;
+                                      },
+                                      onSaved: (desc) => event.description = desc!,
+                                    ),
                                   ),
-                                  maxLines: null,
-                                  validator: (desc) {
-                                    if (desc!.length < 10) {
-                                      return 'Descrição muito curta';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (desc) {},
-                                ),
-                              ),
-                              SizedBox(height: 8,),
-                              Text(
-                                "Data", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  SizedBox(height: 8,),
+                                  Text(
+                                    "Data", 
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 4),
-                                    labelText: 'DD/MM/AAAA',
-                                    border: InputBorder.none,
-                                    icon: Icon(Icons.calendar_today),
+                                  Card(
+                                    child: TextFormField(
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 4),
+                                        labelText: 'DD/MM/AAAA',
+                                        border: InputBorder.none,
+                                        icon: Icon(Icons.calendar_today),
+                                      ),
+                                      keyboardType: TextInputType.datetime,
+                                      validator: (date) {
+                                        if(date!.isEmpty)
+                                            return null;
+                                        if(date.length != 10)
+                                            return 'Enter date in DD / MM / YYYY format';
+                                        return null; 
+                                      },
+                                      onSaved: (date) => event.date = date!,
+                                    ),
                                   ),
-                                  keyboardType: TextInputType.datetime,
-                                  validator: (date) {
-                                    if (date!.isEmpty) {
-                                      return 'Data precisa ser preenchida';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (desc) {},
-                                ),
-                              ),
-                              SizedBox(height: 8,),
-                              Text(
-                                "Juízes", 
-                                style: TextStyle(
-                                  
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 20),
-                                    labelText: 'Quantidade de juizes',
-                                    border: InputBorder.none,
+                                  SizedBox(height: 8,),
+                                  Text(
+                                    "Juízes", 
+                                    style: TextStyle(
+                                      
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  Card(
+                                    child: TextFormField(
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 20),
+                                        labelText: 'Quantidade de juizes',
+                                        border: InputBorder.none,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      validator: (judge) {
+                                        if (judge!.isEmpty) {
+                                          return 'Defina a quantidade de juizes do evento';
+                                        }
+                                        if(int.tryParse(judge.toString())! >= 10)
+                                            return 'O numero de juizes não pode exceder 10';
+                                        return null;
+                                      },
+                                      onSaved: (judge) => event.juizes = int.tryParse(judge.toString())!,
+                                    ),
                                   ),
-                                  validator: (name) {
-                                    if (name!.isEmpty) {
-                                      return 'Defina a quantidade de juizes do evento';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (name){},
-                                ),
-                              ),
-                              Text(
-                                "Quantidade de notas", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 20),
-                                    labelText: 'Quantidade de notas a serem somadas',
-                                    border: InputBorder.none,
+                                  Text(
+                                    "Quantidade de notas", 
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  Card(
+                                    child: TextFormField(
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 20),
+                                        labelText: 'Quantidade de notas a serem somadas',
+                                        border: InputBorder.none,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      validator: (notes) {
+                                        if (notes!.isEmpty) {
+                                          return 'Defina a quantidade de notas a serem somadas';
+                                        }
+                                        if(int.tryParse(notes.toString())! >= 10)
+                                            return 'O numero de notas a serem somadas não deve exceder 10';
+                                        return null;
+                                      },
+                                      onSaved: (name){},
+                                    ),
                                   ),
-                                  validator: (name) {
-                                    if (name!.isEmpty) {
-                                      return 'Defina a quantidade de notas a serem somadas';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (name){},
-                                ),
-                              ),
-                              Text(
-                                "Link da planilha de participantes", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontFamily: "Roboto", 
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Card(
-                                child: TextFormField(
-                                  controller: linkController,
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  Text(
+                                    "Link da planilha de participantes", 
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontFamily: "Roboto", 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.only(left: 4),
-                                    hintText: 'https://https://docs.google.com/spreadsheets/d/IDPLANILHAGOOGLESHEETS',
-                                    border: InputBorder.none,
-                                    icon: Icon(Icons.link_outlined),
+                                  Card(
+                                    child: TextFormField(
+                                      controller: linkController,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                      enabled: !eventManager.loading,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(left: 4),
+                                        hintText: 'https://docs.google.com/spreadsheets/d/IDPLANILHAGOOGLESHEETS',
+                                        border: InputBorder.none,
+                                        icon: Icon(Icons.link_outlined),
+                                      ),
+                                      validator: (link) {
+                                        if (link!.isEmpty) {
+                                          return 'O link precisa ser preenchido';
+                                        }
+                                        if(!link.contains('https://docs.google.com/spreadsheets/d/'))
+                                            return 'O link da tabela precisa estar publico no Google Sheets';
+                                        return null;
+                                      },
+                                      onSaved: (link) => event.linkSheet = link!,
+                                    ),
                                   ),
-                                  validator: (link) {
-                                    if (link!.isEmpty) {
-                                      return 'O link precisa ser preenchido';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (link){},
-                                ),
-                              ),
-                              SizedBox(height: 8,),
+                                  SizedBox(height: 8,),
+                      
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: eventManager.loading 
+                                      ? Container(alignment: Alignment.center ,child: CircularProgressIndicator(color: Colors.white,))
+                                      : ButtonWidget(
+                                      color: Color.fromARGB(255, 38, 164, 255),
+                                      textColor: Colors.white,
+                                      text: 'Criar Evento',
+                                      onClicked: eventManager.loading ? (){} : ()async{
 
-                              SizedBox(
-                                width: double.infinity,
-                                child: ButtonWidget(
-                                  color: Color.fromARGB(255, 38, 164, 255),
-                                  textColor: Colors.white,
-                                  text: 'Criar Evento',
-                                  onClicked: (){
-                                    participantsSheetApi.init();
+                                        if(formKey.currentState!.validate()){
+                                          //Salva dados no objeto Event
+                                          formKey.currentState!.save();
 
-                                    participantsSheetApi.setHeader(['id', 'name', 'n1', 'n2', 'n3']);
-                                    
-                                    showDialog(
-                                      context: context, 
-                                      builder: (_){
-                                        return AlertDialog(
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                '''Código do evento''',
-                                                overflow: TextOverflow.visible,
-                                                style: TextStyle(
-                                                  height: 1.171875,
-                                                  fontSize: 18.0,
-                                                  fontFamily: 'Roboto',
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.black,
-
-                                                  /* letterSpacing: 0.0, */
-                                                ),
-                                              ),
-                                              SizedBox(height: 8,),
-                                              //QR CODE
-                                              Container(
-                                                width: 266.0,
-                                                height: 247.0,
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(5),
-                                                  child: Stack(
-                                                    alignment: Alignment.center,
-                                                    children:[ 
-                                                      
-                                                      Container(
-                                                        color: Color.fromARGB(255, 248, 248, 248),
-                                                      ),
-                                                      QrImage(
-                                                        data: 'CSA0001',
-                                                        version: QrVersions.auto,
-                                                        size: 220,
-                                                        gapless: false,
-                                                        embeddedImage: AssetImage('assets/logoWHITE.png'),
-                                                        embeddedImageStyle: QrEmbeddedImageStyle(
-                                                          size: Size(80, 80),
-                                                        ),
-                                                      )
-                                                    ]
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 8,),
-
-                                              //CODIGO GERADO
-                                              Container(
-                                                width: double.infinity,
-                                                height: 33.0,
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(5),
-                                                  child: Stack(
-                                                    alignment: Alignment.center,
-                                                    children: [
-                                                      Container(
-                                                        color: Color.fromARGB(255, 228, 221, 221),
-                                                      ),
-                                                      Text(
-
-                                                      _textCode.toUpperCase(), 
-                                                      style: TextStyle(
-                                                        fontSize: 18.0,
-                                                        fontFamily: 'Roboto',
-                                                        fontWeight: FontWeight.w700,
-                                                        color: Colors.black,
-                                                        /* letterSpacing: 0.0, */
-                                                      ),
-                                                    ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 8,),
-                                              //COPIAR CODIGO
-                                              GestureDetector(
-                                                onTap: (){ 
-                                                  Clipboard.setData(ClipboardData(text: _textCode));
-                                                  // ignore: deprecated_member_use
-                                                  key.currentState!.showSnackBar(
-                                                    SnackBar(content: Text("Código copiado"), duration: Duration(seconds: 2),)
-                                                  );
-                                                },
-                                                child: Text(
-                                                  '''Copiar código''',
-                                                  overflow: TextOverflow.visible,
-                                                  style: TextStyle(
-                                                    height: 1.171875,
-                                                    fontSize: 18.0,
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Color.fromARGB(255, 0, 163, 255),
+                                          //Cria evento no firebase
+                                          eventManager.createEvent(
+                                            event: event, 
+                                            onSuccess:(){
                                               
-                                                    /* letterSpacing: 0.0, */
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                            },
+                                            onFail: (e){
+                                              // ignore: deprecated_member_use
+                                              scaffoldKey.currentState!.showSnackBar(
+                                                SnackBar(
+                                                  content: Text('Falha ao cadastrar: $e'),
+                                                  backgroundColor: Colors.red,
+                                                  duration: Duration(seconds: 2),
+                                                )
+                                              );
+                                            },
+                                          );
 
-                                        );
-                                      }
-                                    );
-                                  },
-                                  
-                                ),
-                              ),
-                            ],
-                          ),
+                                          final eventId = await eventManager.getEventId();
+
+                                          await Future.delayed(Duration(seconds: 2));
+
+                                          await showDialog(
+                                            context: context, 
+                                            builder: (_){
+                                              return QrcodeWidget( eventId: eventId-1, keys: key);
+                                            }
+                                          );
+                                        }
+                                      },
+                                      
+                                    ),
+                                  ),
+                                ],
+                              
+                              );
+                            }
+                          )
                         ),
                       ],
                     ),

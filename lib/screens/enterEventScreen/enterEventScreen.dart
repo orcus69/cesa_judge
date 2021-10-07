@@ -1,4 +1,5 @@
 import 'package:cesa_events_judge/common/buttom/buttonWidget.dart';
+import 'package:cesa_events_judge/models/event/eventManager.dart';
 import 'package:flutter/material.dart';
 
 class EnterEventScreen extends StatefulWidget{
@@ -24,7 +25,6 @@ class _EnterEventScreenState extends State<EnterEventScreen> {
   @override 
   Widget build(BuildContext context){
     final key = new GlobalKey<ScaffoldState>();
-    String _textCode = "";
     return Scaffold(
       key: scaffoldKey,
       body: Form(
@@ -142,8 +142,32 @@ class _EnterEventScreenState extends State<EnterEventScreen> {
                                     if(formKey.currentState!.validate()){
                                       setState(() => isLoading = true);
                                       await Future.delayed(Duration(seconds: 2));
-                                      
-                                      await Navigator.of(context).pushNamed('/judge', arguments: codeControler.text);
+
+                                      //Verifica se o codigo do evento existe
+                                      final isValideQr = await EventManager.validateQrCode(codeControler.text);
+
+                                      if(isValideQr!){
+                                        scaffoldKey.currentState!.showSnackBar(
+                                           SnackBar(
+                                              content: Text('Entrando...'),
+                                              backgroundColor: Colors.green,
+                                              duration: Duration(seconds: 1),
+                                            )
+                                        );
+                                        await Future.delayed(Duration(seconds: 1));
+                                        await Navigator.of(context).pushNamed('/judge', arguments: codeControler.text);
+                                      }else{
+                                        scaffoldKey.currentState!.showSnackBar(
+                                           SnackBar(
+                                              content: Text('Código do evento inválido'),
+                                              backgroundColor: Colors.red,
+                                              duration: Duration(seconds: 2),
+                                            )
+                                        );
+                                        formKey.currentState!.reset();
+                                      }
+
+
                                     }
                                     setState(() => isLoading = false);
                                   },

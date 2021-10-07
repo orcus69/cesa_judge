@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cesa_events_judge/models/event/eventManager.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -79,11 +80,19 @@ class _QRViewExampleState extends State<QRViewExample> {
     setState(() {
       this.controller = controller;
     });
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((scanData) async {
       setState(() {
         result = scanData;
       });
-      Navigator.of(context).pushReplacementNamed('/judge', arguments: result!.code);
+
+      //Verifica se o codigo do evento existe
+      final isValideQr = await EventManager.validateQrCode(result!.code);
+
+      if(isValideQr!)
+        await Navigator.of(context).pushReplacementNamed('/judge', arguments: result!.code);
+      else
+        Navigator.of(context).pop();
+      
       
     });
   }

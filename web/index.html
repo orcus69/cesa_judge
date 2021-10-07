@@ -27,6 +27,23 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+  <script>
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1O9ttgyQYitHHQoLuXMU6l1Kp2BAvmzA",
+      authDomain: "cesaevents.firebaseapp.com",
+      projectId: "cesaevents",
+      storageBucket: "cesaevents.appspot.com",
+      messagingSenderId: "160344324116",
+      appId: "1:160344324116:web:974ae5482519e3dc9a4f01",
+      measurementId: "G-0EFT2H24FW"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
